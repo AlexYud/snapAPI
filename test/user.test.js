@@ -14,4 +14,31 @@ describe("Cadastro de usuário", () => {
       throw new Error(err);
     });
   });
+
+  test("Deve impedir que um usuário se cadastre com os dados vazios", () => {
+    let user = { name: "", email: "", password: "" };
+    return request.post("/user").send(user).then(res => {
+      expect(res.statusCode).toEqual(400);
+    }).catch(err => {
+      throw new Error(err);
+    });
+  });
+
+  test("Deve impedir que um usuário se cadastre com um email repetido", () => {
+    let time = Date.now();
+    let email = `${time}@gmail.com`;
+    let user = { name: "Test", email, password: "abc123" };
+    return request.post("/user").send(user).then(res => {
+      expect(res.statusCode).toEqual(200);
+      expect(res.body.email).toEqual(email);
+      return request.post("/user").send(user).then(res => {
+        expect(res.statusCode).toEqual(400);
+        expect(res.body.error).toEqual("Email já cadastrado");
+      }).catch(err => {
+        throw new Error(err);
+      });
+    }).catch(err => {
+      throw new Error(err);
+    });
+  });
 });
