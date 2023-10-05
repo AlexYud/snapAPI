@@ -2,6 +2,7 @@ let express = require("express");
 let app = express();
 let mongoose = require('mongoose');
 let user = require('./models/user');
+let bcrypt = require("bcrypt");
 
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
@@ -32,12 +33,20 @@ app.post("/user", async (req, res) => {
       return
     }
 
-    let newUser = new User({ name, email, password });
+    let salt = await bcrypt.genSalt(10);
+    let hash = await bcrypt.hash(password, salt);
+
+    let newUser = new User({ name, email, password: hash });
     await newUser.save();
     res.json({ email });
   } catch (error) {
     res.sendStatus(500);
   }
+});
+
+app.delete("/user/:email", async (req, res) => {
+  await User.deleteOne({ email: req.params.email });
+  res.sendStatus(200);
 });
 
 module.exports = app;

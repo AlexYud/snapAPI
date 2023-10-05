@@ -2,6 +2,21 @@ let app = require("../src/app");
 let supertest = require("supertest");
 let request = supertest(app);
 
+let mainUser = { name: "Test User", email: "test@test.com", password: "abc123" };
+
+beforeAll(() => {
+  return request.post("/user")
+  .send(mainUser)
+  .then(res => { })
+  .catch(err => console.log(err))
+});
+
+afterAll(() => {
+  return request.delete(`/user/${mainUser.email}`)
+  .then(res => { })
+  .catch(err => console.log(err))
+});
+
 describe("Cadastro de usuário", () => {
   test("Deve cadastrar um usuário com sucesso", () => {
     let time = Date.now();
