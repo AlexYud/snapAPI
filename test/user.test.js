@@ -6,15 +6,15 @@ let mainUser = { name: "Test User", email: "test@test.com", password: "abc123" }
 
 beforeAll(() => {
   return request.post("/user")
-  .send(mainUser)
-  .then(res => { })
-  .catch(err => console.log(err))
+    .send(mainUser)
+    .then(res => { })
+    .catch(err => { throw new Error(err) });
 });
 
 afterAll(() => {
   return request.delete(`/user/${mainUser.email}`)
-  .then(res => { })
-  .catch(err => console.log(err))
+    .then(res => { })
+    .catch(err => { throw new Error(err) });
 });
 
 describe("Cadastro de usuário", () => {
@@ -22,21 +22,23 @@ describe("Cadastro de usuário", () => {
     let time = Date.now();
     let email = `${time}@gmail.com`;
     let user = { name: "Test", email, password: "abc123" };
-    return request.post("/user").send(user).then(res => {
-      expect(res.statusCode).toEqual(200);
-      expect(res.body.email).toEqual(email);
-    }).catch(err => {
-      throw new Error(err);
-    });
+    return request.post("/user")
+      .send(user)
+      .then(res => {
+        expect(res.statusCode).toEqual(200);
+        expect(res.body.email).toEqual(email);
+      })
+      .catch(err => { throw new Error(err) });
   });
 
   test("Deve impedir que um usuário se cadastre com os dados vazios", () => {
     let user = { name: "", email: "", password: "" };
-    return request.post("/user").send(user).then(res => {
-      expect(res.statusCode).toEqual(400);
-    }).catch(err => {
-      throw new Error(err);
-    });
+    return request.post("/user")
+      .send(user)
+      .then(res => {
+        expect(res.statusCode).toEqual(400);
+      })
+      .catch(err => { throw new Error(err) });
   });
 
   test("Deve impedir que um usuário se cadastre com um email repetido", () => {
@@ -55,5 +57,17 @@ describe("Cadastro de usuário", () => {
     }).catch(err => {
       throw new Error(err);
     });
+  });
+});
+
+describe("Autenticação", () => {
+  test("Deve me retornar um token quando logar", () => {
+    return request.post("/auth")
+      .send({ email: mainUser.email, password: mainUser.password })
+      .then(res => {
+        expect(res.statusCode).toEqual(200);
+        expect(res.body.token).toBeDefined();
+      })
+      .catch(err => { throw new Error(err) });
   });
 });

@@ -1,8 +1,9 @@
-let express = require("express");
+let express = require('express');
 let app = express();
 let mongoose = require('mongoose');
 let user = require('./models/user');
-let bcrypt = require("bcrypt");
+let bcrypt = require('bcrypt');
+let jwt = require('jsonwebtoken');
 
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
