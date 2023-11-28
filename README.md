@@ -25,9 +25,9 @@
 This project was developed using the following technologies:
 
 - Node.js
-- express.js
+- Express.js
 - Jest
-- mongoose
+- Mongoose
 
 ## 📝 License
 
